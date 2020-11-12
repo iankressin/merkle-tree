@@ -1,16 +1,23 @@
 const fs = require("fs");
+const chunks = require("buffer-chunks");
 
-class FileHandler {
-  readFile = (path, cb) => {
-    const chunks = [];
-    const readStream = fs.createReadStream(path, {
-      highWaterMark: 1024 * 1024
-    });
+module.exports = (file, cb) => {
+  if (typeof file === Buffer) {
+    const buffList = chunks(file, 1024);
 
-    readStream.on("data", chunk => chunks.push(chunk));
+    console.log(buffList);
 
-    readStream.on("end", () => cb(chunks));
-  };
-}
+    cb(buffList);
 
-module.exports = new FileHandler();
+    return;
+  }
+
+  const chunks = [];
+  const readStream = fs.createReadStream(file, {
+    highWaterMark: 1024 * 1024
+  });
+
+  readStream.on("data", chunk => chunks.push(chunk));
+
+  readStream.on("end", () => cb(chunks));
+};

@@ -42,7 +42,7 @@ class MerkleTree {
   hashNodes = (node1, node2) => {
     return crypto
       .createHash("sha256")
-      .update(node1 + node2)
+      .update(Buffer.concat([node1, node2]))
       .digest();
   };
 
@@ -56,6 +56,14 @@ class MerkleTree {
 
   getRoot = () => {
     return this.tree[0][0].toString("hex");
+  };
+
+  getTreeData = () => {
+    return {
+      root: this.getRoot(),
+      levels: this.getTree(),
+      depth: this.getDepth()
+    };
   };
 }
 
